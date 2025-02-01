@@ -1131,11 +1131,11 @@ const INPUT: &[&[usize]] = &[
 ];
 
 #[cfg(test)]
-mod test {
+mod test_day2 {
     use super::*;
 
     #[test]
-    fn tc1() {
+    fn remove_layer_index_0() {
         let data = Vec::from([94, 92, 94, 95, 97, 99]);
         let mut r = Report::new(data, false);
         assert!(r.check_safety());
