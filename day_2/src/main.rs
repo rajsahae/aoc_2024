@@ -8,7 +8,7 @@ fn main() {
             safe += 1;
         }
     }
-    println!("safe: {safe} | unsafe: {}", reports.len() - safe);
+    println!("safe: {safe}\nunsafe: {}", reports.len() - safe);
 }
 
 #[derive(Debug)]
