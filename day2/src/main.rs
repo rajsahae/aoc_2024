@@ -1,3 +1,5 @@
+use core::cmp::Ordering;
+
 fn main() {
     let mut reports: Vec<Report> = INPUT.iter().map(|&r| r.into()).collect();
 
@@ -88,10 +90,10 @@ impl Report {
 
         match self.mode {
             Mode::Unknown => {
-                if left > right {
-                    self.mode = Mode::Decreasing;
-                } else if right > left {
-                    self.mode = Mode::Increasing;
+                match left.cmp(&right) {
+                    Ordering::Less => self.mode = Mode::Increasing,
+                    Ordering::Greater => self.mode = Mode::Decreasing,   
+                    _ => (),
                 }
             }
             Mode::Decreasing => {
@@ -105,6 +107,7 @@ impl Report {
                 }
             }
         }
+
         true
     }
 
