@@ -12,15 +12,15 @@ dependencies = [
 ]
 
 [[package]]
-name = "day_1"
+name = "day1"
 version = "0.1.0"
 
 [[package]]
-name = "day_2"
+name = "day2"
 version = "0.1.0"
 
 [[package]]
-name = "day_3"
+name = "day3"
 version = "0.1.0"
 dependencies = [
  "regex",
