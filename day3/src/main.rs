@@ -16,9 +16,7 @@ impl MulScan {
     fn scan(input: &str) -> usize {
         // Split the input into sections based on the do()..dont() and then
         // process the different sections.
-        Self::split(input)
-            .map(Self::mul_scan)
-            .sum()
+        Self::split(input).map(Self::mul_scan).sum()
     }
 
     fn split(input: &str) -> impl Iterator<Item = &str> {
@@ -42,7 +40,7 @@ impl MulScan {
                     segments.push(current_segment);
                     break;
                 }
-            } else  if let Some(md) = do_rxp.find(current_segment) {
+            } else if let Some(md) = do_rxp.find(current_segment) {
                 start += md.end();
                 record = true;
             } else {

@@ -89,13 +89,11 @@ impl Report {
         let right = pair.1;
 
         match self.mode {
-            Mode::Unknown => {
-                match left.cmp(&right) {
-                    Ordering::Less => self.mode = Mode::Increasing,
-                    Ordering::Greater => self.mode = Mode::Decreasing,   
-                    _ => (),
-                }
-            }
+            Mode::Unknown => match left.cmp(&right) {
+                Ordering::Less => self.mode = Mode::Increasing,
+                Ordering::Greater => self.mode = Mode::Decreasing,
+                _ => (),
+            },
             Mode::Decreasing => {
                 if right > left {
                     return false;
