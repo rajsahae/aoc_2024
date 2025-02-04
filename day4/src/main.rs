@@ -1,5 +1,6 @@
 fn main() {
-    println!("{}", count_xmas(PUZZLE_INPUT));
+    println!("XMAS: {}", count_xmas(PUZZLE_INPUT));
+    println!("X-MAS: {}", count_mas(PUZZLE_INPUT));
 }
 
 fn check_valid(input: &[&str]) {
@@ -20,7 +21,7 @@ fn letter_at(input: &'static [&'static str], location: Location) -> &'static str
     &input[row][col..=col]
 }
 
-fn letters_at(
+fn xmas_letters_at(
     input: &'static [&'static str],
     rotation: Rotation,
 ) -> (&'static str, &'static str, &'static str, &'static str) {
@@ -49,6 +50,24 @@ fn is_valid(input_size: (usize, usize), rotation: &Rotation) -> bool {
     true
 }
 
+fn scan_for(input: &'static [&'static str], letter: &str) -> Vec<Location> {
+    // For sanity check, we'll ensure all the rows are the same length
+    check_valid(input);
+    let (num_rows, num_cols) = input_size(input);
+
+    let mut loc: Vec<Location> = Vec::new();
+
+    for row in 0..num_rows {
+        for col in 0..num_cols {
+            if letter_at(input, (row as i32, col as i32)) == letter {
+                loc.push((row as i32, col as i32));
+            }
+        }
+    }
+
+    loc
+}
+
 fn count_xmas(input: &'static [&'static str]) -> usize {
     // Thinking about a brute force approach.
     // We scan for an X, and at that index, we calculate the max 8
@@ -56,26 +75,27 @@ fn count_xmas(input: &'static [&'static str]) -> usize {
     // Filter out anything out of bounds, and then compare each
     // one to XMAS, count any that match.
 
-    // For sanity check, we'll ensure all the rows are the same length
-    check_valid(input);
-    let (num_rows, num_cols) = input_size(input);
+    let locs = scan_for(input, "X");
 
-    let mut x_loc: Vec<Location> = Vec::new();
-
-    for row in 0..num_rows {
-        for col in 0..num_cols {
-            if letter_at(input, (row as i32, col as i32)) == "X" {
-                // println!("X found at {row},{col}");
-                x_loc.push((row as i32, col as i32));
-            }
-        }
-    }
-
-    x_loc
-        .iter()
-        .flat_map(|loc| create_rotations(loc))
-        .flat_map(|rotation| get_letters(input, rotation))
+    locs.iter()
+        .flat_map(|loc| create_xmas_rotations(loc))
+        .flat_map(|rotation| get_xmas(input, rotation))
         .filter(|letters| *letters == ("X", "M", "A", "S"))
+        .count()
+}
+
+fn count_mas(input: &'static [&'static str]) -> usize {
+    let locs = scan_for(input, "A");
+
+    locs.iter()
+        .map(|loc| create_x_mas(loc))
+        .flat_map(|rotation| get_xmas(input, rotation))
+        .filter(|letters| {
+          *letters == ("M", "S", "M", "S")
+          || *letters == ("M", "S", "S", "M")
+          || *letters == ("S", "M", "M", "S")
+          || *letters == ("S", "M", "S", "M")
+        })
         .count()
 }
 
@@ -108,7 +128,7 @@ fn count_xmas(input: &'static [&'static str]) -> usize {
 // - (x, y), (x+1, y-1), (x+2, y-2), (x+3, y-3)
 // - (x, y), (x, y-1), (x, y-2), (x, y-3)
 // - (x, y), (x-1, y-1), (x-2, y-2), (x-3, y-3)
-fn create_rotations(loc: &Location) -> [Rotation; 8] {
+fn create_xmas_rotations(loc: &Location) -> [Rotation; 8] {
     // println!("creating rotation at {loc:?}");
 
     let x = loc.0;
@@ -126,14 +146,21 @@ fn create_rotations(loc: &Location) -> [Rotation; 8] {
     ]
 }
 
-fn get_letters(
+fn create_x_mas(loc: &Location) -> Rotation {
+    let x = loc.0;
+    let y = loc.1;
+
+    [ (x - 1, y - 1), (x + 1, y + 1), (x + 1, y - 1), (x - 1, y + 1) ]
+}
+
+fn get_xmas(
     input: &'static [&'static str],
     rotation: Rotation,
 ) -> Option<(&'static str, &'static str, &'static str, &'static str)> {
     // println!("getting letters for {rotation:?}");
     let is = input_size(input);
     if is_valid(is, &rotation) {
-        Some(letters_at(input, rotation))
+        Some(xmas_letters_at(input, rotation))
     } else {
         None
     }
@@ -305,6 +332,11 @@ mod day4_test {
     }
 
     #[test]
+    fn test_count_mas() {
+        assert_eq!(count_mas(TEST_INPUT), 9)
+    }
+
+    #[test]
     fn test_create_rotations() {
         let loc = (3, 3);
         let expected = [
@@ -318,7 +350,7 @@ mod day4_test {
             [(3, 3), (2, 2), (1, 1), (0, 0)],
         ];
 
-        assert_eq!(create_rotations(&loc), expected);
+        assert_eq!(create_xmas_rotations(&loc), expected);
     }
 
     #[test]
