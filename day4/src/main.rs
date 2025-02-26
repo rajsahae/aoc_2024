@@ -91,10 +91,10 @@ fn count_mas(input: &'static [&'static str]) -> usize {
         .map(|loc| create_x_mas(loc))
         .flat_map(|rotation| get_xmas(input, rotation))
         .filter(|letters| {
-          *letters == ("M", "S", "M", "S")
-          || *letters == ("M", "S", "S", "M")
-          || *letters == ("S", "M", "M", "S")
-          || *letters == ("S", "M", "S", "M")
+            *letters == ("M", "S", "M", "S")
+                || *letters == ("M", "S", "S", "M")
+                || *letters == ("S", "M", "M", "S")
+                || *letters == ("S", "M", "S", "M")
         })
         .count()
 }
@@ -150,7 +150,12 @@ fn create_x_mas(loc: &Location) -> Rotation {
     let x = loc.0;
     let y = loc.1;
 
-    [ (x - 1, y - 1), (x + 1, y + 1), (x + 1, y - 1), (x - 1, y + 1) ]
+    [
+        (x - 1, y - 1),
+        (x + 1, y + 1),
+        (x + 1, y - 1),
+        (x - 1, y + 1),
+    ]
 }
 
 fn get_xmas(
